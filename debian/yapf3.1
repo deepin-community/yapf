@@ -1,0 +1,54 @@
+.TH YAPF3 "1" "September 2016" "Usage: yapf3 [-h [-v] [-d | -i] [-r | -l START-END] [-e PATTERN]" "General Commands Manual"
+.SH NAME
+yapf3 \- Python code formatter
+.SH SYNOPSIS
+.B yapf3
+[\fI\,-h\/\fR] [\fI\,-v\/\fR] [\fI\,-d | -i\/\fR] [\fI\,-r | -l START-END\/\fR] [\fI\,-e PATTERN\/\fR]
+[\-\-style STYLE] [\-\-style\-help] [\-\-no\-local\-style]
+[files [files ...]]
+.SH DESCRIPTION
+yapf3 is a Python code formatter for Python 3.
+.SH OPTIONS
+.PP
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+show this help message and exit
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+show version number and exit
+.TP
+\fB\-d\fR, \fB\-\-diff\fR
+print the diff for the fixed source
+.TP
+\fB\-i\fR, \fB\-\-in\-place\fR
+make changes to files in place
+.TP
+\fB\-r\fR, \fB\-\-recursive\fR
+run recursively over directories
+.TP
+\fB\-l\fR START\-END, \fB\-\-lines\fR START\-END
+range of lines to reformat, one\-based
+.TP
+\fB\-e\fR PATTERN, \fB\-\-exclude\fR PATTERN
+patterns for files to exclude from formatting
+.TP
+\fB\-\-style\fR STYLE
+specify formatting style: either a style name (for
+example "pep8" or "google"), or the name of a file
+with style settings. The default is pep8 unless a
+\&.style.yapf3 or setup.cfg file located in one of the
+parent directories of the source file (or current
+directory for stdin)
+.TP
+\fB\-\-style\-help\fR
+show style settings and exit
+.TP
+\fB\-\-no\-local\-style\fR
+don't search for local style definition (.style.yapf3)
+.IP
+[\-\-style STYLE] [\-\-style\-help] [\-\-no\-local\-style]
+[files [files ...]]
+.SH "SEE ALSO"
+Usage examples along with detailed information on configuring formatting style can be
+found at https://github.com/google/yapf/.
+

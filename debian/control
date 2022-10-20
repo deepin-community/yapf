@@ -1,0 +1,42 @@
+Source: yapf
+Section: python
+Priority: optional
+Maintainer: Ana Custura <ana@netstat.org.uk>
+Uploaders: Debian Python Team <team+python@tracker.debian.org>
+Build-Depends: debhelper-compat (= 13),dh-python,python3-all,python3-setuptools,python3-nose,python3-pkg-resources
+Rules-Requires-Root: no
+Standards-Version: 4.5.1
+Homepage: https://github.com/google/yapf
+Vcs-Git: https://salsa.debian.org/python-team/packages/yapf.git
+Vcs-Browser: https://salsa.debian.org/python-team/packages/yapf
+
+Package: python3-yapf
+Architecture: all
+Depends: ${misc:Depends},
+         ${python3:Depends},
+         python3-lib2to3,
+         python3-pkg-resources
+Breaks: yapf3 (<< 0.19.0-1~)
+Replaces: yapf3 (<< 0.19.0-1~)
+Description: public modules for yapf (Python 3)
+ Yapf is a tool that reformats code to the best formatting that conforms to the
+ style guide. It is not only concerned with lint errors, but also with the
+ stylistic appearance of Python code. The idea is also similar to the 'gofmt'
+ tool for the Go programming language. This package installs the tool for Python
+ 2.
+ .
+ This package provides the modules for Python 3.
+
+Package: yapf3
+Architecture: all
+Depends: ${misc:Depends},
+         ${python3:Depends},
+         python3-yapf (= ${binary:Version})
+Description: Python code formatter for different styles (Python 3)
+ Yapf is a tool that reformats code to the best formatting that conforms to the
+ style guide. It is not only concerned with lint errors, but also with the
+ stylistic appearance of Python code. The idea is also similar to the 'gofmt'
+ tool for the Go programming language. This package installs the tool for Python
+ 3.
+ .
+ This package provides the command-line interface for Python 3.

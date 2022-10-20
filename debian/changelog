@@ -1,0 +1,203 @@
+yapf (0.30.0-1) unstable; urgency=medium
+
+  [ Ondřej Nový ]
+  * d/control: Update Vcs-* fields with new Debian Python Team Salsa
+    layout.
+
+  [ Nicholas D Steeves ]
+  * Create gbp.conf and enable pristine-tar by default.
+  * New upstream version 0.30.0 (Closes: #977563).
+  * Fix typos in long description.
+  * Update Python Team email address.
+  * Migrate to debhelper-compat 13.
+  * control: Add "Rules-Requires-Root: no".
+
+  [ Ana Custura ]
+  * Update copyright information
+  * Bump S-V to 4.5.1 (no changes required)
+
+ -- Ana Custura <ana@netstat.org.uk>  Mon, 21 Dec 2020 10:45:03 +0000
+
+yapf (0.29.0-1) unstable; urgency=medium
+
+  * New upstream version 0.29.0
+
+ -- Ana Custura <ana@netstat.org.uk>  Sat, 08 Feb 2020 18:36:44 +0000
+
+yapf (0.28.0-2) unstable; urgency=medium
+
+  [ Ondřej Nový ]
+  * Bump Standards-Version to 4.4.1.
+
+  [ Sandro Tosi ]
+  * Drop python2 support; Closes: #938863
+
+ -- Sandro Tosi <morph@debian.org>  Wed, 06 Nov 2019 10:33:29 -0500
+
+yapf (0.28.0-1) unstable; urgency=medium
+
+  [ Ondřej Nový ]
+  * Use debhelper-compat instead of debian/compat.
+  * Bump Standards-Version to 4.4.0.
+
+  [ Ana Custura ]
+  * New Upstream vesion 0.28.0
+
+ -- Ana Custura <ana@netstat.org.uk>  Wed, 24 Jul 2019 12:16:19 +0100
+
+yapf (0.25.0-2.1) unstable; urgency=medium
+
+  * Non-maintainer upload
+  * Revert removal of Python2 support (Closes: #919974)
+  * Re-add yapf documentation files
+
+ -- Hilko Bengen <bengen@debian.org>  Sat, 09 Feb 2019 18:12:41 +0100
+
+yapf (0.25.0-2) unstable; urgency=medium
+
+  * Removes Python 2 tests from autopkg test suite (Closes: #919565)
+  * Removes unnecessary files from debian directory
+
+ -- Ana Custura <ana@netstat.org.uk>  Fri, 18 Jan 2019 18:58:57 +0000
+
+yapf (0.25.0-1) unstable; urgency=medium
+
+  [ Ana Custura ]
+  * New Upstream version 0.25.0
+
+  [ Ana C. Custura ]
+
+  * debian/control:
+    - updates standards version to 4.3.0
+    - bumps debhelper version to 12
+    - removes support for end-of-life Python 2
+  * debian/compat:
+    - bumps debhelper vesion to 12
+  * debian/rules:
+    - removes support for end-of-life Python 2
+
+ -- Ana Custura <ana@netstat.org.uk>  Sun, 06 Jan 2019 22:15:35 +0000
+
+yapf (0.22.0-6) unstable; urgency=medium
+
+  [ Ana C. Custura ]
+  * debian/tests/control:
+    - fixes syntax in debian/tests/control
+  * debian/rules:
+    - enables verbose build as per Debian Policy 4.2.0
+
+  [ Nicholas D Steeves ]
+  * debian/tests/control:
+    - Test basic module import like autopkgtest-pkg-python does
+    - Enable verbose autopkgtests to comply with Debian Policy 4.2.0
+  * debian/control:
+    - Add missing dependency on python-pkg-resources to python-yapf
+      (Closes: #904755)
+    - Add missing dependency on python3-pkg-resources to python3-yapf
+      (Closes: #906789)
+
+ -- Ana Custura <ana@netstat.org.uk>  Fri, 07 Sep 2018 20:09:23 +0100
+
+yapf (0.22.0-5) unstable; urgency=medium
+
+  [ Nicholas D Steeves ]
+  * Adds missing dependency on python-nose for test suite (Closes: #906905)
+
+ -- Ana Custura <ana@netstat.org.uk>  Mon, 27 Aug 2018 08:30:32 +0100
+
+yapf (0.22.0-4) unstable; urgency=medium
+
+  [ Ana C. Custura ]
+  * Adds tests dependencies in debian/tests/control
+
+ -- Ana Custura <ana@netstat.org.uk>  Fri, 17 Aug 2018 08:14:29 +0100
+
+yapf (0.22.0-3) unstable; urgency=medium
+
+  [ Ana C. Custura ]
+  * Removes unnecessary comment from rules file
+  * Updates autopkgtest suite (Closes: #903533)
+
+ -- Ana Custura <ana@netstat.org.uk>  Thu, 16 Aug 2018 15:44:10 +0100
+
+yapf (0.22.0-2) unstable; urgency=medium
+
+  * debian/control:
+      - adds missing dependency on python-pkg-resources (Closes: #904755)
+      - updates Debian policy to 4.2.0
+      - bumps debhelper vesion to 11
+      - updates vcs fields
+  * debian/compat:
+      - bumps debhelper vesion to 11
+  * debian/rules:
+      - prevents some Python3 tests from running (Closes: #903533)
+
+ -- Ana Custura <ana@netstat.org.uk>  Sun, 12 Aug 2018 15:47:28 +0100
+
+yapf (0.22.0-1) unstable; urgency=medium
+
+  * New upstream version 0.22.0
+
+ -- Ana Custura <ana@netstat.org.uk>  Sun, 27 May 2018 23:32:54 +0100
+
+yapf (0.21.0-2) unstable; urgency=medium
+
+  * Adds missing dependency on python3-lib2to3 (Closes: #896267)
+
+ -- Ana Custura <ana@netstat.org.uk>  Sat, 28 Apr 2018 14:22:10 +0100
+
+yapf (0.21.0-1) unstable; urgency=medium
+
+  * New upstream version 0.21.0
+
+ -- Ana Custura <ana@netstat.org.uk>  Tue, 27 Mar 2018 13:18:42 +0100
+
+yapf (0.20.1-1) unstable; urgency=medium
+
+  * New upstream version 0.20.1
+  * debian/control:
+    -updates Debian policy to 4.1.3
+
+ -- Ana Custura <ana@netstat.org.uk>  Fri, 26 Jan 2018 11:50:37 +0000
+
+yapf (0.19.0-2) unstable; urgency=medium
+
+  * Replaces incorrect manpage information. (Closes: #877701)
+
+ -- Ana Custura <ana@netstat.org.uk>  Fri, 17 Nov 2017 12:41:05 +0000
+
+yapf (0.19.0-1) unstable; urgency=medium
+
+  * New upstream version 0.19.0
+  * debian/control:
+    -splits package into modules and binaries (closes: #880958, #879196 )
+    -updates Debian policy to 4.1.1
+  * debian/rules:
+    -enables tests at build-time
+    -excludes test from running (see https://github.com/google/yapf/issues/469)
+  * debian/tests/control:
+    -enables testing with autopkgtest
+
+ -- Ana Custura <ana@netstat.org.uk>  Mon, 13 Nov 2017 18:11:05 +0000
+
+yapf (0.17.0-1) unstable; urgency=medium
+
+  * New upstream version 0.17.0
+  * debian/control
+   - Updates standards version to 4.1.0
+   - Uses canonical URL for alioth-hosted repository
+   - Removes unnecessary version dependency for python-all
+
+ -- Ana Custura <ana@netstat.org.uk>  Thu, 31 Aug 2017 23:04:34 +0100
+
+yapf (0.14.0-1) unstable; urgency=medium
+
+  * New upstream version
+
+ -- Ana Custura <ana@netstat.org.uk>  Sun, 04 Dec 2016 18:22:18 +0000
+
+yapf (0.11.1-1) unstable; urgency=medium
+
+  * Initial release (Closes: #835853)
+
+ -- Ana Custura <ana@netstat.org.uk>  Mon, 19 Sep 2016 14:28:13 +0100

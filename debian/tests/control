@@ -1,0 +1,10 @@
+Test-Command: set -e
+ ; cp -r yapftests "$AUTOPKGTEST_TMP"
+ ; for py in $(py3versions -r 2>/dev/null)
+ ; do cd "$AUTOPKGTEST_TMP"
+ ; echo "Testing with $py:"
+ ; $py -c "import yapf; print(yapf)"
+ ; $py -m nose -v --exclude "testStronglyConnected" --exclude "testAsyncAsNonKeyword" --exclude "testListComprehensionPreferThreeLinesForLineWrap"
+ ; done
+Depends: python3-all, python3-yapf, python3-nose
+Restrictions: allow-stderr
