@@ -4,7 +4,7 @@ Test-Command: set -e
  ; do cd "$AUTOPKGTEST_TMP"
  ; echo "Testing with $py:"
  ; $py -c "import yapf; print(yapf)"
- ; $py -m nose -v --exclude "testStronglyConnected" --exclude "testAsyncAsNonKeyword" --exclude "testListComprehensionPreferThreeLinesForLineWrap"
+ ; $py -m pytest -v
  ; done
-Depends: python3-all, python3-yapf, python3-nose
+Depends: python3-all, python3-yapf, python3-pytest
 Restrictions: allow-stderr

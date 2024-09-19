@@ -1,3 +1,40 @@
+yapf (0.40.2-1) unstable; urgency=medium
+
+  * Team Upload
+  * New upstream version
+  * Update build dependencies:
+    - python3-2to3
+    - python3-nose (Closes: #1018672)
+    + dh-sequence-python3
+    + pybuild-plugin-pyproject
+    + python3-importlib-metadata
+    + python3-platformdirs
+    + python3-tomli
+
+ -- Alexandre Detiste <tchet@debian.org>  Thu, 23 May 2024 21:18:25 +0200
+
+yapf (0.33.0-1) unstable; urgency=medium
+
+  * Team upload.
+
+  [ Debian Janitor ]
+  * Remove constraints unnecessary since buster (oldoldstable)
+  * Set upstream metadata fields: Bug-Database, Bug-Submit, Repository-Browse.
+  * Set upstream metadata fields: Repository.
+
+  [ Jochen Sprickerhof ]
+  * New upstream version 0.33.0
+  * Update d/copyright
+  * Bump policy version (no changes)
+
+ -- Jochen Sprickerhof <jspricke@debian.org>  Tue, 13 Jun 2023 18:29:32 +0200
+
+yapf (0.32.0-1) unstable; urgency=medium
+
+  * New upstream version 0.32.0
+
+ -- Ana Custura <ana@netstat.org.uk>  Fri, 14 Jan 2022 12:42:48 +0000
+
 yapf (0.30.0-1) unstable; urgency=medium
 
   [ Ondřej Nový ]

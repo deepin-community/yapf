@@ -19,28 +19,42 @@ i.e., lines which, if there were no column limit, we would place all tokens on
 that line. It then uses a priority queue to figure out what the best formatting
 is --- i.e., the formatting with the least penalty.
 
-It differs from tools like autopep8 and pep8ify in that it doesn't just look for
+It differs from tools like autopep8 in that it doesn't just look for
 violations of the style guide, but looks at the module as a whole, making
 formatting decisions based on what's the best format for each line.
 
 If no filenames are specified, YAPF reads the code from stdin.
 """
-from __future__ import print_function
 
 import argparse
+import codecs
+import io
 import logging
 import os
 import sys
 
-from lib2to3.pgen2 import tokenize
+from importlib_metadata import metadata
 
 from yapf.yapflib import errors
 from yapf.yapflib import file_resources
-from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
-__version__ = '0.30.0'
+__version__ = metadata('yapf')['Version']
+
+
+def _raw_input():
+  wrapper = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
+  return wrapper.buffer.raw.readall().decode('utf-8')
+
+
+def _removeBOM(source):
+  """Remove any Byte-order-Mark bytes from the beginning of a file."""
+  bom = codecs.BOM_UTF8
+  bom = bom.decode('utf-8')
+  if source.startswith(bom):
+    return source[len(bom):]
+  return source
 
 
 def main(argv):
@@ -57,15 +71,12 @@ def main(argv):
   Raises:
     YapfError: if none of the supplied files were Python files.
   """
-  args = _ParseArguments(argv)
-  if args.version:
-    print('yapf {}'.format(__version__))
-    return 0
-
+  parser = _BuildParser()
+  args = parser.parse_args(argv[1:])
   style_config = args.style
 
   if args.style_help:
-    print_help(args)
+    _PrintHelp(args)
     return 0
 
   if args.lines and len(args.files) > 1:
@@ -80,14 +91,16 @@ def main(argv):
 
     original_source = []
     while True:
-      if sys.stdin.closed:
+      # Test that sys.stdin has the "closed" attribute. When using pytest, it
+      # co-opts sys.stdin, which makes the "main_tests.py" fail. This is gross.
+      if hasattr(sys.stdin, 'closed') and sys.stdin.closed:
         break
       try:
         # Use 'raw_input' instead of 'sys.stdin.read', because otherwise the
         # user will need to hit 'Ctrl-D' more than once if they're inputting
         # the program by hand. 'raw_input' throws an EOFError exception if
         # 'Ctrl-D' is pressed, which makes it easy to bail out of this loop.
-        original_source.append(py3compat.raw_input())
+        original_source.append(_raw_input())
       except EOFError:
         break
       except KeyboardInterrupt:
@@ -97,17 +110,18 @@ def main(argv):
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
 
     source = [line.rstrip() for line in original_source]
-    source[0] = py3compat.removeBOM(source[0])
+    source[0] = _removeBOM(source[0])
 
     try:
       reformatted_source, _ = yapf_api.FormatCode(
-          py3compat.unicode('\n'.join(source) + '\n'),
+          str('\n'.join(source).replace('\r\n', '\n') + '\n'),
           filename='<stdin>',
           style_config=style_config,
-          lines=lines,
-          verify=args.verify)
-    except tokenize.TokenError as e:
-      raise errors.YapfError('%s:%s' % (e.args[1][0], e.args[0]))
+          lines=lines)
+    except errors.YapfError:
+      raise
+    except Exception as e:
+      raise errors.YapfError(errors.FormatErrorMsg(e))
 
     file_resources.WriteReformattedCode('<stdout>', reformatted_source)
     return 0
@@ -120,7 +134,7 @@ def main(argv):
                                              (args.exclude or []) +
                                              exclude_patterns_from_ignore_file)
   if not files:
-    raise errors.YapfError('Input filenames did not match any python files')
+    raise errors.YapfError('input filenames did not match any python files')
 
   changed = FormatFiles(
       files,
@@ -129,14 +143,14 @@ def main(argv):
       no_local_style=args.no_local_style,
       in_place=args.in_place,
       print_diff=args.diff,
-      verify=args.verify,
       parallel=args.parallel,
       quiet=args.quiet,
-      verbose=args.verbose)
+      verbose=args.verbose,
+      print_modified=args.print_modified)
   return 1 if changed and (args.diff or args.quiet) else 0
 
 
-def print_help(args):
+def _PrintHelp(args):
   """Prints the help menu."""
 
   if args.style is None and not args.no_local_style:
@@ -147,7 +161,7 @@ def print_help(args):
     for line in docstring.splitlines():
       print('#', line and ' ' or '', line, sep='')
     option_value = style.Get(option)
-    if isinstance(option_value, set) or isinstance(option_value, list):
+    if isinstance(option_value, (set, list)):
       option_value = ', '.join(map(str, option_value))
     print(option.lower(), '=', option_value, sep='')
     print()
@@ -159,10 +173,10 @@ def FormatFiles(filenames,
                 no_local_style=False,
                 in_place=False,
                 print_diff=False,
-                verify=False,
                 parallel=False,
                 quiet=False,
-                verbose=False):
+                verbose=False,
+                print_modified=False):
   """Format a list of files.
 
   Arguments:
@@ -177,31 +191,32 @@ def FormatFiles(filenames,
     in_place: (bool) Modify the files in place.
     print_diff: (bool) Instead of returning the reformatted source, return a
       diff that turns the formatted source into reformatter source.
-    verify: (bool) True if reformatted code should be verified for syntax.
     parallel: (bool) True if should format multiple files in parallel.
     quiet: (bool) True if should output nothing.
     verbose: (bool) True if should print out filenames while processing.
+    print_modified: (bool) True if should print out filenames of modified files.
 
   Returns:
     True if the source code changed in any of the files being formatted.
   """
   changed = False
   if parallel:
-    import multiprocessing  # pylint: disable=g-import-not-at-top
     import concurrent.futures  # pylint: disable=g-import-not-at-top
+    import multiprocessing  # pylint: disable=g-import-not-at-top
     workers = min(multiprocessing.cpu_count(), len(filenames))
     with concurrent.futures.ProcessPoolExecutor(workers) as executor:
       future_formats = [
           executor.submit(_FormatFile, filename, lines, style_config,
-                          no_local_style, in_place, print_diff, verify, quiet,
-                          verbose) for filename in filenames
+                          no_local_style, in_place, print_diff, quiet, verbose,
+                          print_modified) for filename in filenames
       ]
       for future in concurrent.futures.as_completed(future_formats):
         changed |= future.result()
   else:
     for filename in filenames:
       changed |= _FormatFile(filename, lines, style_config, no_local_style,
-                             in_place, print_diff, verify, quiet, verbose)
+                             in_place, print_diff, quiet, verbose,
+                             print_modified)
   return changed
 
 
@@ -211,12 +226,12 @@ def _FormatFile(filename,
                 no_local_style=False,
                 in_place=False,
                 print_diff=False,
-                verify=False,
                 quiet=False,
-                verbose=False):
+                verbose=False,
+                print_modified=False):
   """Format an individual file."""
   if verbose and not quiet:
-    print('Reformatting %s' % filename)
+    print(f'Reformatting {filename}')
 
   if style_config is None and not no_local_style:
     style_config = file_resources.GetDefaultStyleForDir(
@@ -229,17 +244,17 @@ def _FormatFile(filename,
         style_config=style_config,
         lines=lines,
         print_diff=print_diff,
-        verify=verify,
         logger=logging.warning)
-  except tokenize.TokenError as e:
-    raise errors.YapfError('%s:%s:%s' % (filename, e.args[1][0], e.args[0]))
-  except SyntaxError as e:
-    e.filename = filename
+  except errors.YapfError:
     raise
+  except Exception as e:
+    raise errors.YapfError(errors.FormatErrorMsg(e))
 
   if not in_place and not quiet and reformatted_code:
     file_resources.WriteReformattedCode(filename, reformatted_code, encoding,
                                         in_place)
+  if print_modified and has_change and in_place and not quiet:
+    print(f'Formatted {filename}')
   return has_change
 
 
@@ -268,22 +283,19 @@ def _GetLines(line_strings):
   return lines
 
 
-def _ParseArguments(argv):
-  """Parse the command line arguments.
-
-  Arguments:
-    argv: command-line arguments, such as sys.argv (including the program name
-      in argv[0]).
+def _BuildParser():
+  """Constructs the parser for the command line arguments.
 
   Returns:
-    An object containing the arguments used to invoke the program.
+    An ArgumentParser instance for the CLI.
   """
-  parser = argparse.ArgumentParser(description='Formatter for Python code.')
+  parser = argparse.ArgumentParser(
+      prog='yapf', description='Formatter for Python code.')
   parser.add_argument(
       '-v',
       '--version',
-      action='store_true',
-      help='show version number and exit')
+      action='version',
+      version='%(prog)s {}'.format(__version__))
 
   diff_inplace_quiet_group = parser.add_mutually_exclusive_group()
   diff_inplace_quiet_group.add_argument(
@@ -328,10 +340,10 @@ def _ParseArguments(argv):
       action='store',
       help=('specify formatting style: either a style name (for example "pep8" '
             'or "google"), or the name of a file with style settings. The '
-            'default is pep8 unless a %s or %s file located in the same '
+            'default is pep8 unless a %s or %s or %s file located in the same '
             'directory as the source or one of its parent directories '
             '(for stdin, the current directory is used).' %
-            (style.LOCAL_STYLE, style.SETUP_CONFIG)))
+            (style.LOCAL_STYLE, style.SETUP_CONFIG, style.PYPROJECT_TOML)))
   parser.add_argument(
       '--style-help',
       action='store_true',
@@ -342,13 +354,16 @@ def _ParseArguments(argv):
       '--no-local-style',
       action='store_true',
       help="don't search for local style definition")
-  parser.add_argument('--verify', action='store_true', help=argparse.SUPPRESS)
   parser.add_argument(
       '-p',
       '--parallel',
       action='store_true',
-      help=('run yapf in parallel when formatting multiple files. Requires '
-            'concurrent.futures in Python 2.X'))
+      help=('run YAPF in parallel when formatting multiple files.'))
+  parser.add_argument(
+      '-m',
+      '--print-modified',
+      action='store_true',
+      help='print out file names of modified files')
   parser.add_argument(
       '-vv',
       '--verbose',
@@ -357,7 +372,7 @@ def _ParseArguments(argv):
 
   parser.add_argument(
       'files', nargs='*', help='reads from stdin when no files are specified.')
-  return parser.parse_args(argv[1:])
+  return parser
 
 
 def run_main():  # pylint: disable=invalid-name

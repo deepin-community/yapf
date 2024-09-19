@@ -3,7 +3,8 @@ Upstream-Name: yapf
 Source: https://github.com/google/yapf
 
 Files: *
-Copyright: 2015-2018 Google Inc.
+Copyright: 2015-2022 Google Inc.
+           2022, Bill Wendling
 License: Apache-2.0
 
 Files: debian/*
